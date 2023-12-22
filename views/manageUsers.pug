@@ -1,0 +1,44 @@
+extends base
+
+mixin navItem(link,text,icon,active)
+    li(class=`${active ? "side-nav--active" : ""}`)
+        a(href=`${link}`)
+            svg
+                use(xlink:href=`/img/icons.svg#icon-${icon}`)
+            | #{text}
+
+block content
+
+    main.main
+        .user-view
+            nav.user-view__menu
+                ul.side-nav
+                    +navItem("/me","Settings","settings")
+                    +navItem("/my-tours","My bookings","briefcase")
+                    +navItem("/my-reviews","My reviews","star")
+                    +navItem("/my-favourites","My favourites","heart")
+                    +navItem("#","Billing","card")
+                - if(user.role === "admin")
+                    .admin-nav
+                        h5.admin-nav__heading Admin
+                        ul.side-nav
+                            +navItem("/manage-tours","Manage tours","map")
+                            +navItem("/manage-users","Manage users","users",true)
+                            +navItem("/manage-reviews","Manage reviews","star")
+                            +navItem("/manage-bookings","Manage bookings","briefcase")
+        .user-view__content(style="display: flex; justify-content: center;")
+            - if(users && users.length > 0)
+                .card-container
+                    each user in users
+                        .card(style="display: flex; flex-direction: row; width: 43rem;")
+                            .card__details
+                                .reviews__avatar
+                                    img.reviews__avatar-img(src=`/img/users/${user.photo}` alt=`${user.name}`)
+                                    h6.reviews__user(style="color: black;")
+                                        span(style="color: red;")=user.role
+                                        br
+                                        span=user.name
+                            .card__details
+                                a.btn.btn--green.btn--small(href=`/user/${user.name}`) Details
+            -else
+                h2.heading-secondary.heading-secondary--error No user found for you...

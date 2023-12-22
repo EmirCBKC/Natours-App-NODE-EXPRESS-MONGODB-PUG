@@ -1,0 +1,38 @@
+extends base
+
+mixin navItem(link,text,icon,active)
+    li(class=`${active ? "side-nav--active" : ""}`)
+        a(href=`${link}`)
+            svg
+                use(xlink:href=`/img/icons.svg#icon-${icon}`)
+            | #{text}
+
+block content
+
+    main.main
+        .user-view
+            nav.user-view__menu
+                ul.side-nav
+                    +navItem("/me","Settings","settings")
+                    +navItem("/my-tours","My bookings","briefcase")
+                    +navItem("/my-reviews","My reviews","star")
+                    +navItem("/my-favourites","My favourites","heart")
+                    +navItem("#","Billing","card")
+                - if(user.role === "admin")
+                    .admin-nav
+                        h5.admin-nav__heading Admin
+                        ul.side-nav
+                            +navItem("/manage-tours","Manage tours","map")
+                            +navItem("/manage-users","Manage users","users")
+                            +navItem("/manage-reviews","Manage reviews","star",true)
+                            +navItem("/manage-bookings","Manage bookings","briefcase")
+        .user-view__content(style="display: flex; justify-content: center;")
+            - if(reviews && reviews.length > 0)
+                .card-container
+                    each review in reviews
+                        .card(style="height: 41rem;")
+                                    p(style="font-size: 15px; margin-top: 1rem;")= review.review
+                                    .card__footer(style="margin-top: 0px;")
+                                        a.btn.btn--green.btn--small(href=`/review/${review.review}`) Details
+            -else
+                h2.heading-secondary.heading-secondary--error No review found for you...
